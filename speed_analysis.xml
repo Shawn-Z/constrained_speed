@@ -1,0 +1,9 @@
+<library path="lib/libconstrained_speed_analysis">
+    <class name="constrained_speed_analysis/constrained_speed_analysis"
+           type="constrained_speed_analysis::ConstrainedSpeedAnalysis"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Analysis
+        </description>
+    </class>
+</library>

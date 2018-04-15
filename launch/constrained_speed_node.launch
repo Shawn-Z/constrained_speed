@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="constrained_speed" type="constrained_speed_node" name="constrained_speed" output="screen">
+        <rosparam command="load" file="$(find constrained_speed)/config/constrained_speed_config.yaml"/>
+    </node>
+</launch>

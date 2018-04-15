@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="nodelet" type="nodelet" name="constrained_speed_manager" args="manager" output="screen"/>
+    <node pkg="nodelet" type="nodelet" name="speed_analysis" args="load constrained_speed/constrained_speed_nodelet constrained_speed_manager">
+        <rosparam command="load" file="$(find constrained_speed)/config/constrained_speed_config.yaml" />
+    </node>
+</launch>

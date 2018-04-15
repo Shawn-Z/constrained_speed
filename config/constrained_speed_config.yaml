@@ -1,0 +1,54 @@
+# constrained_speed_nodelet parameters
+
+# The frame_id in Header of msg, used for checking.
+map_frame_id:           odom
+
+# The max speed of the vehicle.
+v_max:                  3
+
+# The max latitude acceleration of the vehicle.
+acc_lat_max:            4
+
+# The max longitude acceleration of the vehicle.
+acc_lon_max:            1.25
+
+# The max longitude deceleration of the vehicle.
+dec_lon_max:            4
+
+# The max longitude jerk of the vehicle,
+# actually this constraints performed not well because the defects in jerk calculation methods
+jerk_lon_max:           0.1
+
+# The average speed deviation between iteration result and the former, if smaller than this, iterate ends.
+epsilon:                0.001
+
+# If curvature smaller than this, skip calculate latitude acceleration constraints,
+# considering max speed, if curvature small enough, implementing latitude acc-constraint takes no effects.
+curvature_redundancy:   0.000001
+
+# If set true, and launch 'constrained_speed_analysis.launch', information will be record in a bagfile.
+enable_debug:           true
+
+# If set false, it will not check if the current speed is updated
+speed_update_detect:    true
+
+# The buffer size of path subscriber.
+path_sub_buffer:        1
+
+# The buffer size of speed subscriber.
+speed_sub_buffer:       1
+
+# The buffer size of trajectory publisher.
+traj_pub_buffer:        10
+
+# The interval of detecting if path(and speed) is updated, if true, calculate and publish.
+cal_interval:           0.02
+
+# If set true, more information will be printed in the terminal.
+verbose_mode:           true
+
+# The buffer size of publishing data for rosbag, only take effects if 'enable_debug' set true.
+debug_pub_buffer:       100
+
+# The least point number of path points
+least_point_num:        5
