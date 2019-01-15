@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+from rosparam_handler.parameter_generator_catkin import *
+gen = ParameterGenerator()
+
+gen.add("reconfig", paramtype="bool", description="dynamic reconfigure", default=False)
+
+gen.add("halt1", paramtype="bool", description="switch one for halting the program", default=False, configurable=True)
+gen.add("halt2", paramtype="bool", description="switch two for halting the program", default=False, configurable=True)
+gen.add("params_lock", paramtype="bool", description="lock of params", default=True, configurable=True)
+
+function_switch = gen.add_group("Functions Switch")
+function_switch.add("enable_debug", paramtype="bool", description="lock of params", default=False, configurable=True)
+function_switch.add("verbose", paramtype="bool", description="verbose", default=False, configurable=True)
+function_switch.add_enum("remove_dec_mode", description="the level of remove throttle-brake cycles", entry_strings=["not", "dec", "fully"], default="not")
+
+
+constraints = gen.add_group("Constraints")
+constraints.add("v_max_general", paramtype="double", description="guess", default=6, min=0, max=20, configurable=True)
+constraints.add("acc_lat_max", paramtype="double", description="guess", default=1.2, min=0, max=5, configurable=True)
+constraints.add("acc_lon_max", paramtype="double", description="guess", default=2.5, min=0, max=5, configurable=True)
+constraints.add("dec_lon_max", paramtype="double", description="guess", default=-2.5, min=-5, max=0, configurable=True)
+constraints.add("slide_dec", paramtype="double", description="guess", default=-0.2, min=-1, max=-0.002, configurable=True)
+constraints.add("min_brake_dec", paramtype="double", description="guess", default=-1.3, min=-2, max=0, configurable=True)
+constraints.add("safe_dec", paramtype="double", description="guess", default=-4, min=-8, max=0)
+constraints.add("steer_lat_acc", paramtype="double", description="guess", default=2, min=0, max=5, configurable=True)
+
+constraints.add("jerk_O_S_vex_max", paramtype="double", description="set v max", default=-1, min=-1, max=0, configurable=True)
+constraints.add("jerk_O_S_cave_max", paramtype="double", description="set v max", default=0.05, min=0, max=1, configurable=True)
+constraints.add("jerk_N_A_cave", paramtype="double", description="lon acc", default=1, min=0, max=10, configurable=True)
+constraints.add("jerk_N_S_cave", paramtype="double", description="slide dec", default=0.2, min=0, max=1, configurable=True)
+constraints.add("jerk_N_D_cave", paramtype="double", description="lon dec", default=1, min=0, max=10, configurable=True)
+constraints.add("jerk_N_D_vex", paramtype="double", description="jerk", default=-1, min=-10, max=0, configurable=True)
+constraints.add("jerk_N_S_vex", paramtype="double", description="jerk", default=-0.1, min=-1, max=0, configurable=True)
+constraints.add("jerk_N_A_vex", paramtype="double", description="jerk", default=-1, min=-20, max=0, configurable=True)
+
+constraints.add("safe_redundancy", paramtype="double", description="guess", default=1, min=-10, max=10, configurable=True)
+
+blind_group = gen.add_group("Blind Area Treat")
+blind_group.add_enum("blind_mode", description="guess", entry_strings=["no", "local", "global"], default="global")
+# blind_group.add("blind_reactivate", paramtype="bool", description="guess", default=True, configurable=True)
+blind_group.add("blind_time", paramtype="double", description="guess", default=1.8, min=0.001, max=4, configurable=True)
+
+issue_group = gen.add_group("Issue Module")
+issue_group.add_enum("issue_mode", description="guess", entry_strings=["direct", "cycle"], default="direct")
+issue_group.add("not_pub_dead_zone", paramtype="bool", description="guess", default=False, configurable=True)
+issue_group.add("acc_delay", paramtype="double", description="guess", default=0.15, min=0.001, max=4, configurable=True)
+issue_group.add("dec_delay", paramtype="double", description="guess", default=1.8, min=0.001, max=4, configurable=True)
+
+brake_amount_group = gen.add_group("Brake Amount Module")
+brake_amount_group.add_enum("brake_amount_mode", description="guess", entry_strings=["zero", "slide", "multiple"], default="zero")
+brake_amount_group.add("brake_amplify_revise", paramtype="bool", description="guess", default=False, configurable=True)
+brake_amount_group.add("brake_distinguish", paramtype="double", description="guess", default=-0.2, min=-2, max=-0.01, configurable=True)
+brake_amount_group.add("acc_time_limit", paramtype="double", description="guess", default=0.5, min=0, max=4, configurable=True)
+brake_amount_group.add("brake_amount_amplify", paramtype="double", description="guess", default=1.1, min=0.1, max=10, configurable=True)
+brake_amount_group.add("brake_amount_multiple_coefficient", paramtype="double", description="guess", default=0.1, min=0, max=1, configurable=True)
+
+curv_and_steer_group = gen.add_group("Curv and Steer")
+# curv_and_steer_group.add("curve_reproduce", paramtype="bool", description="guess", default=True, configurable=True)
+curv_and_steer_group.add("half_s_curv_cal", paramtype="double", description="guess", default=6, min=0.001, max=10, configurable=True)
+curv_and_steer_group.add("curvature_max", paramtype="double", description="guess", default=0.2184858, min=0.1, max=10)
+# curv_and_steer_group.add("curv_modify", paramtype="bool", description="guess", default=False, configurable=True)
+# curv_and_steer_group.add("curv_increase", paramtype="bool", description="guess", default=True, configurable=True)
+# curv_and_steer_group.add("curv_times", paramtype="double", description="guess", default=1, min=0.1, max=10, configurable=True)
+# curv_and_steer_group.add("curv_R_plus", paramtype="double", description="guess", default=0, min=-10, max=10, configurable=True)
+curv_and_steer_group.add("steer_amplify", paramtype="double", description="guess", default=1, min=0, max=10, configurable=True)
+
+fake_group = gen.add_group("fake state")
+fake_group.add("fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("speed_fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("acc_fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("steer_fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("issue_acc_fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("issue_direction_fake", paramtype="bool", description="guess", default=False, configurable=True)
+fake_group.add("fake_speed", paramtype="double", description="guess", default=0, min=0, max=20, configurable=True)
+fake_group.add("fake_acc", paramtype="double", description="guess", default=0, min=-10, max=10, configurable=True)
+fake_group.add("fake_steer", paramtype="double", description="guess", default=0, min=-32, max=32, configurable=True)
+fake_group.add("fake_issue_acc", paramtype="double", description="guess", default=0, min=-32, max=32, configurable=True)
+fake_group.add_enum("fake_issue_direction", description="guess", entry_strings=["N", "D1", "R"], default="N")
+
+
+constant_group = gen.add_group("constants")
+constant_group.add("speed_seq_num", paramtype="int", description="num of recorded history speed", default=50, min=1, max=150)
+constant_group.add("steer_seq_num", paramtype="int", description="num of recorded history steer", default=50, min=1, max=150)
+constant_group.add("wheelbase", paramtype="double", description="guess", default=2.86)
+
+mess_group = gen.add_group("mess group")
+mess_group.add("v_max_cycle_times", paramtype="int", description="guess", default=100, min=0, max=100000)
+mess_group.add("v_max_cycle_diff", paramtype="double", description="guess", default=0.001, min=0, max=1)
+mess_group.add("v_init_diff", paramtype="double", description="guess", default=0.001, min=0, max=1)
+mess_group.add("jerk_cycle_times", paramtype="int", description="guess", default=100, min=0, max=100000)
+mess_group.add("jerk_cycle_diff", paramtype="double", description="guess", default=0.001, min=0, max=1)
+
+exit(gen.generate("constrained_speed", "constrained_speed", "cs_method1"))

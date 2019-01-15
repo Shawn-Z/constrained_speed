@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="constrained_speed" type="constrained_speed_node" name="constrained_speed" output="screen">
+        <rosparam command="load" file="$(find constrained_speed)/cfg/toyota/default/cs_method1.yaml"/>
+        <rosparam command="load" file="$(find map_server)/config/common_config.yaml"/>
+    </node>
+</launch>
