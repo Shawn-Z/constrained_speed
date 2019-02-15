@@ -13,7 +13,7 @@ struct toyota_issue {
 
 class Toyota {
 public:
-    void publish(ros::NodeHandle nh, std::vector<double_t> &p_time, std::vector<double_t> &p_v, std::vector<double_t> &p_acc, double_t p_acc_delay, double_t p_dec_delay, bool forward) {
+    toyota_issue publish(ros::NodeHandle nh, std::vector<double_t> &p_time, std::vector<double_t> &p_v, std::vector<double_t> &p_acc, double_t p_acc_delay, double_t p_dec_delay, bool forward) {
         static ros::Publisher publisher = nh.advertise<speed_ctrl_msgs::speed_ctrl>("/speed_plan", 1);
         static speed_ctrl_msgs::speed_ctrl speed_ctrl;
         toyota_issue issue = issueCal(p_time, p_v, p_acc, p_acc_delay, p_dec_delay);
@@ -24,6 +24,7 @@ public:
         speed_ctrl.issue_v = issue.v;
         speed_ctrl.issue_acc = issue.acc;
         publisher.publish(speed_ctrl);
+        return issue;
     }
 
 private:

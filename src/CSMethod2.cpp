@@ -128,6 +128,8 @@ bool CSMethod2::pointsPretreat() {
     }
     shawn::SPoints sPoints;
     this->intervals_arc_lengths_ = sPoints.calculate_intervals_arc_lengths(this->x_points_, this->y_points_);
+    this->intervals_ = this->intervals_arc_lengths_[0];
+    this->arc_lengths_ = this->intervals_arc_lengths_[1];
 
     if ((this->arc_lengths_.back() < min_total_length) || (direction_index == 0)) {
         this->x_points_.clear();
@@ -507,10 +509,31 @@ bool CSMethod2::publish() {
     //// todo SETTING. modify value below as you need
     double_t acc_delay = 0.2;
     double_t dec_delay = 2.0;
-
     static Toyota toyota;
-    toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
+    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
+
+    additionPublish(issue_result);
+
     return true;
+}
+
+void CSMethod2::additionPublish(toyota_issue issue) {
+    static speed_debug_msgs::speed_debug speed_debug;
+    static ros::Publisher debug_pub = this->nh_.advertise<speed_debug_msgs::speed_debug>("/speed_debug", 1);
+    speed_debug.points.resize(this->points_size_);
+    for (size_t i = 0; i < this->points_size_; ++i) {
+        speed_debug.points[i].v.v_constrained = this->v_[i];
+        speed_debug.points[i].curv.curv_final = this->curvatures_[i];
+        speed_debug.points[i].time.time = this->time_[i];
+        speed_debug.points[i].x = this->x_points_[i];
+        speed_debug.points[i].y = this->y_points_[i];
+        speed_debug.points[i].s = this->arc_lengths_[i];
+        speed_debug.points[i].acc = this->acc_[i];
+        speed_debug.issue.v = issue.v;
+        speed_debug.issue.acc = issue.acc;
+        speed_debug.pub_ros_time = ros::Time::now().toSec();
+    }
+    debug_pub.publish(speed_debug);
 }
 
 }

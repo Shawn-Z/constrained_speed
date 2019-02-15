@@ -7,7 +7,7 @@ verbose_level:  "silence"
 remove_dec_mode:  "not"
 
 # Constraints
-v_max_general:  6
+v_max:  6
 acc_lat_max:  1.2
 acc_lon_max:  2.5
 dec_lon_max:  -2.5
@@ -68,3 +68,6 @@ jerk_cycle_diff:  0.001
 speed_seq_num:  50
 steer_seq_num:  50
 wheelbase:  2.86
+
+
+road_net_topic: haha

@@ -6,7 +6,7 @@ add_compile_options(-std=c++11)
 set(catkin_deps
         roscpp
         plan2control_msgs
-        #speed_debug_msgs
+        speed_debug_msgs
         control_msgs
         #dymidetect2speed_msgs
         #sensor_driver_msgs
@@ -39,7 +39,7 @@ include_directories(
 add_executable(constrained_speed
         src/ConstrainedSpeedNode.cpp
         src/CSMethod2.cpp
-)
+        include/ThreeOnePublish.hpp)
 
 add_dependencies(constrained_speed
         ${PROJECT_NAME}_gencfg

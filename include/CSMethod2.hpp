@@ -9,6 +9,8 @@
 #include "control_msgs/GetECUReport.h"
 #include "control_msgs/SteerCmd.h"
 
+#include "speed_debug_msgs/speed_debug.h"
+
 #include "SLog.hpp"
 #include "SJerk.hpp"
 #include "SPoints.hpp"
@@ -59,8 +61,8 @@ private:
     std::vector<double_t> x_points_;
     std::vector<double_t> y_points_;
     std::vector<std::vector<double_t>> intervals_arc_lengths_;
-    std::vector<double_t> &intervals_ = intervals_arc_lengths_[0];
-    std::vector<double_t> &arc_lengths_ = intervals_arc_lengths_[1];
+    std::vector<double_t> intervals_;
+    std::vector<double_t> arc_lengths_;
 
     std::vector<double_t> curvatures_;
 
@@ -131,6 +133,7 @@ private:
     std::vector<double_t> acc_;
     std::vector<double_t> jerk_;
     bool publish();
+    void additionPublish(toyota_issue issue);
 };
 
 }
