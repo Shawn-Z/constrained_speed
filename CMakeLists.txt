@@ -12,6 +12,7 @@ set(catkin_deps
         #sensor_driver_msgs
         speed_ctrl_msgs
         lanelet_map_msgs
+        three_one_msgs
 )
 
 find_package(catkin REQUIRED
@@ -39,7 +40,7 @@ include_directories(
 add_executable(constrained_speed
         src/ConstrainedSpeedNode.cpp
         src/CSMethod2.cpp
-        include/ThreeOnePublish.hpp)
+        include/ThreeOnePublish.hpp include/DEFINEs.hpp)
 
 add_dependencies(constrained_speed
         ${PROJECT_NAME}_gencfg

@@ -509,15 +509,21 @@ bool CSMethod2::publish() {
     //// todo SETTING. modify value below as you need
     double_t acc_delay = 0.2;
     double_t dec_delay = 2.0;
-    static Toyota toyota;
-    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
+//    static Toyota toyota;
+//    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
 
-    additionPublish(issue_result);
+    static ThreeOnePublish threeOnePublish;
+    three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
+
+    std::vector<double_t> tmp_issue_result;
+    tmp_issue_result.emplace_back(issue_result.v);
+    tmp_issue_result.emplace_back(issue_result.acc);
+    additionPublish(tmp_issue_result);
 
     return true;
 }
 
-void CSMethod2::additionPublish(toyota_issue issue) {
+void CSMethod2::additionPublish(std::vector<double_t> issue) {
     static speed_debug_msgs::speed_debug speed_debug;
     static ros::Publisher debug_pub = this->nh_.advertise<speed_debug_msgs::speed_debug>("/speed_debug", 1);
     speed_debug.points.resize(this->points_size_);
@@ -529,8 +535,8 @@ void CSMethod2::additionPublish(toyota_issue issue) {
         speed_debug.points[i].y = this->y_points_[i];
         speed_debug.points[i].s = this->arc_lengths_[i];
         speed_debug.points[i].acc = this->acc_[i];
-        speed_debug.issue.v = issue.v;
-        speed_debug.issue.acc = issue.acc;
+        speed_debug.issue.v = issue[0];
+        speed_debug.issue.acc = issue[1];
         speed_debug.pub_ros_time = ros::Time::now().toSec();
     }
     debug_pub.publish(speed_debug);

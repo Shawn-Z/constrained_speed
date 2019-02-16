@@ -19,6 +19,7 @@
   <depend>sensor_driver_msgs</depend>
   <depend>speed_ctrl_msgs</depend>
   <depend>lanelet_map_msgs</depend>
+  <depend>three_one_msgs</depend>
 
   <build_depend>gtrostestest</build_depend>
   <build_depend>gtest</build_depend>

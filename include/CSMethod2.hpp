@@ -17,18 +17,11 @@
 #include "SThreePointsCurvature.hpp"
 #include "STime.hpp"
 #include "Toyota.hpp"
+#include "ThreeOnePublish.hpp"
+
+#include "DEFINEs.hpp"
 
 namespace constrained_speed {
-
-#define LOG_INFO LOG(INFO)<<std::setiosflags(std::ios::fixed)<<ros::Time::now().toSec()<<" "
-#define LOG_WARN LOG(WARNING)<<std::setiosflags(std::ios::fixed)<<ros::Time::now().toSec()<<" "
-#define LOG_ERROR LOG(ERROR)<<std::setiosflags(std::ios::fixed)<<ros::Time::now().toSec()<<" "
-#define LOG_FATAL LOG(FATAL)<<std::setiosflags(std::ios::fixed)<<ros::Time::now().toSec()<<" "
-#define FIXED std::setiosflags(std::ios::fixed)<<
-
-#define PROCESS_PERIOD 0.1
-#define ISSUE_MODE "direct" // direct cycle
-#define TIME_CHECK_PERIOD 0.2
 
 enum class direction {
     stop = 0,
@@ -133,7 +126,7 @@ private:
     std::vector<double_t> acc_;
     std::vector<double_t> jerk_;
     bool publish();
-    void additionPublish(toyota_issue issue);
+    void additionPublish(std::vector<double_t> issue);
 };
 
 }
