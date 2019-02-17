@@ -16,14 +16,10 @@ CSMethod2::CSMethod2(ros::NodeHandle node_handle, ros::NodeHandle private_node_h
     setHandle();
 
     //// todo SETTING. modify topic name as you need
-    this->traj_pub_ = this->nh_.advertise<plan2control_msgs::Trajectory>("/trajectory", 1);
-    this->ctrl_pub_ = this->nh_.advertise<speed_ctrl_msgs::speed_ctrl>("/speed_plan", 1);
-
-    //// todo SETTING. modify topic name as you need
-    this->ecu_sub_ = this->nh_.subscribe<control_msgs::GetECUReport>("/ecudatareport", 1, &CSMethod2::ecuCb, this);
     this->roadnet_sub_ = this->nh_.subscribe<lanelet_map_msgs::Way>(this->yaml_params_.road_net_topic, 1, &CSMethod2::roadnetCb, this);
     this->path_sub_ = this->nh_.subscribe<plan2control_msgs::Trajectory>("/global_path/traj_plan", 1, &CSMethod2::pathCb, this);
     this->steer_cmd_sub_ = this->nh_.subscribe<control_msgs::SteerCmd>("steer_cmd", 1, &CSMethod2::steerCmdCb, this);
+    this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
 
     if (strcmp(ISSUE_MODE, "cycle") == 0) {
         this->process_timer_ = this->nh_.createTimer(ros::Duration(PROCESS_PERIOD), boost::bind(&CSMethod2::planning, this));
@@ -61,42 +57,42 @@ void CSMethod2::planning() {
     if (this->no_msg_) {
         return;
     }
-    if (!pointsPretreat()) {
+    if (!this->pointsPretreat()) {
         return;
     }
-    if (!pointsAttributes()) {
+    if (!this->pointsAttributes()) {
         return;
     }
     this->v_.assign(this->points_size_, 100.0);
     this->v_[0] = this->cur_speed_;
-    if (!setVMax()) {
+    if (!this->setVMax()) {
         return;
     }
-    if (!limitLatAcc()) {
+    if (!this->limitLatAcc()) {
         return;
     }
-    if (!blindHandle()) {
+    if (!this->blindHandle()) {
         return;
     }
-    if (!limitBySteer()) {
+    if (!this->limitBySteer()) {
         return;
     }
-    if (!durex()) {
+    if (!this->durex()) {
         return;
     }
-    if (!smoothSpeed()) {
+    if (!this->smoothSpeed()) {
         return;
     }
-    if (!calTime()) {
+    if (!this->calTime()) {
         return;
     }
-    if (!calAcc()) {
+    if (!this->calAcc()) {
         return;
     }
-    if (!calJerk()) {
+    if (!this->calJerk()) {
         return;
     }
-    if (!publish()) {
+    if (!this->publish()) {
         return;
     }
 }
@@ -434,16 +430,6 @@ void CSMethod2::roadnetCb(const lanelet_map_msgs::Way msg) {
     this->sub_times_.pushTimestamp(this->roadnet_sub_handle_);
 }
 
-void CSMethod2::ecuCb(const control_msgs::GetECUReport msg) {
-    static std::vector<double_t> speed_seq(50, 0.0);
-    speed_seq.erase(speed_seq.begin());
-    speed_seq.emplace_back(msg.speed.velocity.linear.x);
-    this->cur_acc_ = speed_seq.back() - speed_seq[0];
-    this->cur_speed_ = msg.speed.velocity.linear.x;
-    this->getECUReport_ = msg;
-    this->sub_times_.pushTimestamp(this->ecu_sub_handle_);
-}
-
 void CSMethod2::reconfigureRequest(cs_method2Config &config, uint32_t level) {
 }
 
@@ -540,6 +526,15 @@ void CSMethod2::additionPublish(std::vector<double_t> issue) {
         speed_debug.pub_ros_time = ros::Time::now().toSec();
     }
     debug_pub.publish(speed_debug);
+}
+
+void CSMethod2::three_one_ecuCb(const three_one_msgs::report msg) {
+    static std::vector<double_t> speed_seq(50, 0.0);
+    speed_seq.erase(speed_seq.begin());
+    speed_seq.emplace_back(msg.motion.vehicle_speed);
+    this->cur_acc_ = speed_seq.back() - speed_seq[0];
+    this->cur_speed_ = msg.motion.vehicle_speed;
+    this->sub_times_.pushTimestamp(this->ecu_sub_handle_);
 }
 
 }

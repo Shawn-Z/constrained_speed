@@ -12,6 +12,7 @@ struct three_one_issue {
 };
 
 class ThreeOnePublish {
+public:
     three_one_issue publish(ros::NodeHandle nh, std::vector<double_t> &p_time, std::vector<double_t> &p_v, std::vector<double_t> &p_acc, double_t p_delay, bool forward) {
         static ros::Publisher publisher = nh.advertise<three_one_msgs::control_speed>("/speed_plan", 1);
         static three_one_msgs::control_speed control_speed;

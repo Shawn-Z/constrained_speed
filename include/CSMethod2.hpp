@@ -10,6 +10,7 @@
 #include "control_msgs/SteerCmd.h"
 
 #include "speed_debug_msgs/speed_debug.h"
+#include "three_one_msgs/report.h"
 
 #include "SLog.hpp"
 #include "SJerk.hpp"
@@ -77,16 +78,17 @@ private:
 
     void pathCb(const plan2control_msgs::Trajectory msg);
     void roadnetCb(const lanelet_map_msgs::Way msg);
-    void ecuCb(const control_msgs::GetECUReport msg);
     void steerCmdCb(const control_msgs::SteerCmd msg);
+
+    void three_one_ecuCb(const three_one_msgs::report msg);
 
     ros::Subscriber path_sub_;
     ros::Subscriber ecu_sub_;
     ros::Subscriber roadnet_sub_;
     ros::Subscriber steer_cmd_sub_;
+    ros::Subscriber three_one_ecu_sub_;
 
     ros::Publisher traj_pub_;
-    ros::Publisher ctrl_pub_;
 
     ros::Timer process_timer_;
     ros::Timer check_timer_;
@@ -96,7 +98,6 @@ private:
 
     plan2control_msgs::Trajectory trajectory_;
     lanelet_map_msgs::Way way_;
-    control_msgs::GetECUReport getECUReport_;
     control_msgs::SteerCmd steerCmd_;
 
 
