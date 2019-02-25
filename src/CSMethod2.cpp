@@ -18,7 +18,7 @@ CSMethod2::CSMethod2(ros::NodeHandle node_handle, ros::NodeHandle private_node_h
     //// todo SETTING. modify topic name as you need
     this->roadnet_sub_ = this->nh_.subscribe<lanelet_map_msgs::Way>(this->yaml_params_.road_net_topic, 1, &CSMethod2::roadnetCb, this);
     this->path_sub_ = this->nh_.subscribe<plan2control_msgs::Trajectory>("/global_path/traj_plan", 1, &CSMethod2::pathCb, this);
-    this->steer_cmd_sub_ = this->nh_.subscribe<control_msgs::SteerCmd>("steer_cmd", 1, &CSMethod2::steerCmdCb, this);
+    this->steer_cmd_sub_ = this->nh_.subscribe<control_msgs::SteerCmd>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
     this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
 
     if (strcmp(ISSUE_MODE, "cycle") == 0) {

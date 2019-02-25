@@ -18,6 +18,10 @@ public:
         static three_one_msgs::control_speed control_speed;
         three_one_issue issue = issueCal(p_time, p_v, p_acc, p_delay);
         if (issue.v < 0.0001) {
+            control_speed.priority = 0;
+            control_speed.gear = 0;
+            control_speed.speed = 0;
+            publisher.publish(control_speed);
             return issue;
         }
         issue.v = std::max(issue.v, 0.1);
