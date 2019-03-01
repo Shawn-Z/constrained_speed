@@ -18,7 +18,7 @@ CSMethod2::CSMethod2(ros::NodeHandle node_handle, ros::NodeHandle private_node_h
     //// todo SETTING. modify topic name as you need
     this->roadnet_sub_ = this->nh_.subscribe<lanelet_map_msgs::Way>(this->yaml_params_.road_net_topic, 1, &CSMethod2::roadnetCb, this);
     this->path_sub_ = this->nh_.subscribe<plan2control_msgs::Trajectory>("/global_path/traj_plan", 1, &CSMethod2::pathCb, this);
-    this->steer_cmd_sub_ = this->nh_.subscribe<control_msgs::SteerCmd>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
+    this->steer_cmd_sub_ = this->nh_.subscribe<three_one_msgs::control_steer>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
     this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
 
     if (strcmp(ISSUE_MODE, "cycle") == 0) {
@@ -89,9 +89,9 @@ void CSMethod2::planning() {
     if (!this->calAcc()) {
         return;
     }
-    if (!this->calJerk()) {
-        return;
-    }
+//    if (!this->calJerk()) {
+//        return;
+//    }
     if (!this->publish()) {
         return;
     }
@@ -244,7 +244,7 @@ bool CSMethod2::smoothSpeed() {
     double_t slide_dec = -0.2;
     double_t a_end = 0.0;
     double_t v_begin_threshold = 0.01;
-    bool remove_dec = true;
+    bool remove_dec = false;
     double_t remove_dec_value = -0.2;
     double_t remove_dec_limit_v = std::max(this->cur_speed_, 2.0);
 
@@ -327,7 +327,7 @@ bool CSMethod2::blindHandle() {
     //// todo SETTING. modify value below as you need
     bool blind = true;
     bool use_blind_time = true;
-    double_t blind_time = 1.8;
+    double_t blind_time = 0.5;
     double_t blind_area = 10.0;
     double_t blind_dec = -0.2;
     double_t blind_limit_v = 2.0;
@@ -406,7 +406,7 @@ void CSMethod2::time_check() {
         this->way_.foggy_area = 0;
     }
     if (!steer_cmd_till_now_check) {
-        this->steerCmd_.steer = 0.0;
+        this->control_steer_.curvature = 0.0;
     }
 }
 
@@ -433,18 +433,14 @@ void CSMethod2::roadnetCb(const lanelet_map_msgs::Way msg) {
 void CSMethod2::reconfigureRequest(cs_method2Config &config, uint32_t level) {
 }
 
-void CSMethod2::steerCmdCb(const control_msgs::SteerCmd msg) {
-   this->steerCmd_ = msg;
+void CSMethod2::steerCmdCb(const three_one_msgs::control_steer msg) {
+   this->control_steer_ = msg;
    this->sub_times_.pushTimestamp(this->steer_cmd_sub_handle_);
 }
 
 bool CSMethod2::limitBySteer() {
-    //// todo SETTING. modify value below as you need
-    double_t wheel_base = 5.0;
-
-    this->steerCmd_.steer = std::min<float>(this->steerCmd_.steer, 32.0);
-    this->steerCmd_.steer = std::max<float>(this->steerCmd_.steer, 3.0);
-    double_t v = sqrt(fabs(wheel_base / tan(fabs(this->steerCmd_.steer) / 180.0 * M_PI) * this->yaml_params_.acc_lat));
+    this->control_steer_.curvature = std::max<float>(0.0001, fabs(this->control_steer_.curvature));
+    double_t v = sqrt(fabs(this->yaml_params_.acc_lat / this->control_steer_.curvature));
     for (size_t i = 1; i < this->points_size_; ++i) {
         this->v_[i] = std::min(this->v_[i], v);
     }
@@ -493,7 +489,7 @@ bool CSMethod2::calJerk() {
 
 bool CSMethod2::publish() {
     //// todo SETTING. modify value below as you need
-    double_t acc_delay = 0.2;
+    double_t acc_delay = 0.15;
     double_t dec_delay = 2.0;
 //    static Toyota toyota;
 //    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
@@ -501,10 +497,10 @@ bool CSMethod2::publish() {
     static ThreeOnePublish threeOnePublish;
     three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
 
-    std::vector<double_t> tmp_issue_result;
-    tmp_issue_result.emplace_back(issue_result.v);
-    tmp_issue_result.emplace_back(issue_result.acc);
-    additionPublish(tmp_issue_result);
+//    std::vector<double_t> tmp_issue_result;
+//    tmp_issue_result.emplace_back(issue_result.v);
+//    tmp_issue_result.emplace_back(issue_result.acc);
+//    additionPublish(tmp_issue_result);
 
     return true;
 }

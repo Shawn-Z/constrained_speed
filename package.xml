@@ -14,10 +14,6 @@
   <depend>roscpp</depend>
   <depend>plan2control_msgs</depend>
   <depend>speed_debug_msgs</depend>
-  <depend>dymidetect2speed_msgs</depend>
-  <depend>control_msgs</depend>
-  <depend>sensor_driver_msgs</depend>
-  <depend>speed_ctrl_msgs</depend>
   <depend>lanelet_map_msgs</depend>
   <depend>three_one_msgs</depend>
 

@@ -6,18 +6,17 @@
 #include "constrained_speed/cs_method2Parameters.h"
 #include "plan2control_msgs/Trajectory.h"
 #include "lanelet_map_msgs/Way.h"
-#include "control_msgs/GetECUReport.h"
-#include "control_msgs/SteerCmd.h"
 
 #include "speed_debug_msgs/speed_debug.h"
 #include "three_one_msgs/report.h"
+#include "three_one_msgs/control.h"
 
 #include "SLog.hpp"
 #include "SJerk.hpp"
 #include "SPoints.hpp"
 #include "SThreePointsCurvature.hpp"
 #include "STime.hpp"
-#include "Toyota.hpp"
+//#include "Toyota.hpp"
 #include "ThreeOnePublish.hpp"
 
 #include "DEFINEs.hpp"
@@ -78,7 +77,7 @@ private:
 
     void pathCb(const plan2control_msgs::Trajectory msg);
     void roadnetCb(const lanelet_map_msgs::Way msg);
-    void steerCmdCb(const control_msgs::SteerCmd msg);
+    void steerCmdCb(const three_one_msgs::control_steer msg);
 
     void three_one_ecuCb(const three_one_msgs::report msg);
 
@@ -98,7 +97,7 @@ private:
 
     plan2control_msgs::Trajectory trajectory_;
     lanelet_map_msgs::Way way_;
-    control_msgs::SteerCmd steerCmd_;
+    three_one_msgs::control_steer control_steer_;
 
 
     void time_check();
