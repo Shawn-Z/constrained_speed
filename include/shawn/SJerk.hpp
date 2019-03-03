@@ -213,7 +213,7 @@ public:
             return;
         }
         for (size_t i = 1; i < tmp_size - 1; ++i) {
-            p_v[i] = std::min(p_v[i], calculate_middle_speed(p_v[i - 1], p_v[i + 1], p_interval[i - 1], p_interval[i + 1], p_jerk_max, true));
+            p_v[i] = std::min(p_v[i], calculate_middle_speed(p_v[i - 1], p_v[i + 1], p_interval[i], p_interval[i + 1], p_jerk_max, true));
         }
     }
 

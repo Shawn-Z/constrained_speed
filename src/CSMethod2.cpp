@@ -180,6 +180,7 @@ bool CSMethod2::pointsAttributes() {
                                                           concerned_curvature,
                                                           max_unsigned_curvature);
     if (this->curvatures_.size() != this->points_size_) {
+        ROS_ERROR_STREAM("empty curvatures");
         this->curvatures_.assign(this->points_size_, max_unsigned_curvature);
     }
     return true;
@@ -497,10 +498,10 @@ bool CSMethod2::publish() {
     static ThreeOnePublish threeOnePublish;
     three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
 
-//    std::vector<double_t> tmp_issue_result;
-//    tmp_issue_result.emplace_back(issue_result.v);
-//    tmp_issue_result.emplace_back(issue_result.acc);
-//    additionPublish(tmp_issue_result);
+    std::vector<double_t> tmp_issue_result;
+    tmp_issue_result.emplace_back(issue_result.v);
+    tmp_issue_result.emplace_back(issue_result.acc);
+    additionPublish(tmp_issue_result);
 
     return true;
 }

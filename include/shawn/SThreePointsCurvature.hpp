@@ -94,7 +94,8 @@ public:
     double_t calculatePointUnsignedCurvature(double_t p_former_x, double_t p_former_y,
                                              double_t p_latter_x, double_t p_latter_y, double_t p_waist_length) {
         double_t bottom_length_square = pow((p_former_x - p_latter_x), 2.0) + pow((p_former_y - p_latter_y), 2.0);
-        return 2 * sqrt(fabs(pow(p_waist_length, 2.0) - 0.25 * pow(bottom_length_square, 2.0))) / pow(p_waist_length, 2.0);
+        double_t curv = 2 * sqrt(fabs(pow(p_waist_length, 2.0) - 0.25 * bottom_length_square)) / pow(p_waist_length, 2.0);
+        return curv;
     }
 
     std::vector<double_t> calculateUnsignedCurvatures(const std::vector<double_t> &p_x_points,
