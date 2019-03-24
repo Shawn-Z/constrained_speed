@@ -140,6 +140,8 @@ bool CSMethod2::pointsPretreat() {
             direction_index = i;
         }
         this->intervals_arc_lengths_ = sPoints.calculate_intervals_arc_lengths(this->x_points_, this->y_points_);
+        this->intervals_ = this->intervals_arc_lengths_[0];
+        this->arc_lengths_ = this->intervals_arc_lengths_[1];
         if (this->intervals_arc_lengths_.empty()) {
             LOG_ERROR << "CS: receive points illegal";
             return false;
@@ -167,11 +169,7 @@ bool CSMethod2::pointsAttributes() {
     double_t concerned_curvature = 0.06;
     double_t max_unsigned_curvature = 0.2184858;
 
-    //// todo 测试等号向量复制 深浅
-    //// todo 测试引用
-
     shawn::SThreePointsCurvature sCurvature;
-    //// todo 测试curvatures非空直接赋值；
     this->curvatures_ = sCurvature.speedPlanningCurvature(this->x_points_,
                                                           this->y_points_,
                                                           this->arc_lengths_,
