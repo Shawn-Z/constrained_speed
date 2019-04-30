@@ -18,8 +18,8 @@ CSMethod2::CSMethod2(ros::NodeHandle node_handle, ros::NodeHandle private_node_h
     //// todo SETTING. modify topic name as you need
     this->roadnet_sub_ = this->nh_.subscribe<lanelet_map_msgs::Way>(this->yaml_params_.road_net_topic, 1, &CSMethod2::roadnetCb, this);
     this->path_sub_ = this->nh_.subscribe<plan2control_msgs::Trajectory>("/global_path/traj_plan", 1, &CSMethod2::pathCb, this);
-    this->steer_cmd_sub_ = this->nh_.subscribe<three_one_msgs::control_steer>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
-    this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
+    this->steer_cmd_sub_ = this->nh_.subscribe<three_one_msgs::ControlSteer>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
+    this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::Report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
 
     if (strcmp(ISSUE_MODE, "cycle") == 0) {
         this->process_timer_ = this->nh_.createTimer(ros::Duration(PROCESS_PERIOD), boost::bind(&CSMethod2::planning, this));
@@ -227,6 +227,8 @@ bool CSMethod2::setVMax() {
 
 bool CSMethod2::limitLatAcc() {
     double_t zero_curvature = this->yaml_params_.acc_lat / 10000;
+    //// todo make small curvature to zero
+    zero_curvature = 0.1;
     for (size_t i = 1; i < points_size_; ++i) {
         if (this->curvatures_[i] > zero_curvature) {
             this->v_[i] = std::min(this->v_[i], pow(this->yaml_params_.acc_lat / this->curvatures_[i], 0.5));
@@ -237,9 +239,9 @@ bool CSMethod2::limitLatAcc() {
 
 bool CSMethod2::smoothSpeed() {
     //// todo SETTING. modify value below as you need
-    double_t jerk_forward_pass = 1.0;
+    double_t jerk_forward_pass = 200.0;
 
-    double_t jerk_backward_pass = 1.0;
+    double_t jerk_backward_pass = 200.0;
     double_t slide_dec = -0.2;
     double_t a_end = 0.0;
     double_t v_begin_threshold = 0.01;
@@ -247,7 +249,7 @@ bool CSMethod2::smoothSpeed() {
     double_t remove_dec_value = -0.2;
     double_t remove_dec_limit_v = std::max(this->cur_speed_, 2.0);
 
-    double_t jerk_middle_pass = 1.0;
+    double_t jerk_middle_pass = 200.0;
     double_t middle_cycle_diff = 0.001;
     size_t middle_cycles = 100;
 
@@ -432,13 +434,15 @@ void CSMethod2::roadnetCb(const lanelet_map_msgs::Way msg) {
 void CSMethod2::reconfigureRequest(cs_method2Config &config, uint32_t level) {
 }
 
-void CSMethod2::steerCmdCb(const three_one_msgs::control_steer msg) {
+void CSMethod2::steerCmdCb(const three_one_msgs::ControlSteer msg) {
    this->control_steer_ = msg;
    this->sub_times_.pushTimestamp(this->steer_cmd_sub_handle_);
 }
 
 bool CSMethod2::limitBySteer() {
     this->control_steer_.curvature = std::max<float>(0.0001, fabs(this->control_steer_.curvature));
+    //// todo adpat for three_one lateral control
+    this->control_steer_.curvature /= 3.0;
     double_t v = sqrt(fabs(this->yaml_params_.acc_lat / this->control_steer_.curvature));
     for (size_t i = 1; i < this->points_size_; ++i) {
         this->v_[i] = std::min(this->v_[i], v);
@@ -523,7 +527,7 @@ void CSMethod2::additionPublish(std::vector<double_t> issue) {
     debug_pub.publish(speed_debug);
 }
 
-void CSMethod2::three_one_ecuCb(const three_one_msgs::report msg) {
+void CSMethod2::three_one_ecuCb(const three_one_msgs::Report msg) {
     static std::vector<double_t> speed_seq(50, 0.0);
     speed_seq.erase(speed_seq.begin());
     speed_seq.emplace_back(msg.motion.vehicle_speed);

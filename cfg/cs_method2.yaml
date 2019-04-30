@@ -7,8 +7,8 @@ verbose_level:  "silence"
 remove_dec_mode:  "not"
 
 # Constraints
-v_max:  6
-acc_lat_max:  1.2
+v_max:  20
+acc_lat_max:  4.0
 acc_lon_max:  2.5
 dec_lon_max:  -2.5
 slide_dec:  -0.2

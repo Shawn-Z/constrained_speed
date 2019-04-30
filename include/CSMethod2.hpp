@@ -8,8 +8,8 @@
 #include "lanelet_map_msgs/Way.h"
 
 #include "speed_debug_msgs/speed_debug.h"
-#include "three_one_msgs/report.h"
-#include "three_one_msgs/control.h"
+#include "three_one_msgs/Report.h"
+#include "three_one_msgs/Control.h"
 
 #include "SLog.hpp"
 #include "SJerk.hpp"
@@ -103,10 +103,10 @@ private:
     /// \brief  callback function of the roadnet
     void roadnetCb(const lanelet_map_msgs::Way msg);
     /// \brief  callback function of the steer command
-    void steerCmdCb(const three_one_msgs::control_steer msg);
+    void steerCmdCb(const three_one_msgs::ControlSteer msg);
 
     /// \brief  callback function of ecu on cw platform
-    void three_one_ecuCb(const three_one_msgs::report msg);
+    void three_one_ecuCb(const three_one_msgs::Report msg);
 
     /// \brief  the subscriber of the path
     ros::Subscriber path_sub_;
@@ -137,7 +137,7 @@ private:
     /// \brief ros msg of roadnet
     lanelet_map_msgs::Way way_;
     /// \brief ros msg of steer command
-    three_one_msgs::control_steer control_steer_;
+    three_one_msgs::ControlSteer control_steer_;
 
 
     /// \brief  check the time period of variety functions
