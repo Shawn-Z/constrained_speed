@@ -228,7 +228,7 @@ bool CSMethod2::setVMax() {
 bool CSMethod2::limitLatAcc() {
     double_t zero_curvature = this->yaml_params_.acc_lat / 10000;
     //// todo make small curvature to zero
-    zero_curvature = 0.1;
+    zero_curvature = 0.06;
     for (size_t i = 1; i < points_size_; ++i) {
         if (this->curvatures_[i] > zero_curvature) {
             this->v_[i] = std::min(this->v_[i], pow(this->yaml_params_.acc_lat / this->curvatures_[i], 0.5));
@@ -370,12 +370,13 @@ bool CSMethod2::blindHandle() {
 bool CSMethod2::durex() {
     //// todo SETTING. modify value below as you need
     //// todo SETTING. remember adjust safe redundancy in different mode
-    double_t general_space_front = 2.5;
+    double_t general_space_front = 2.0;
     double_t general_space_rear = 2.5;
     double_t search_space_front = 3.8;
     double_t search_space_rear = 1.2;
 
     double_t safe_redundancy = 1.0;
+    safe_redundancy += general_space_front;
     double_t dec_delay = 1.8;
 
     double_t at = fabs(this->yaml_params_.safe_dec * dec_delay);
