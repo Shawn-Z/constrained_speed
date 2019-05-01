@@ -377,7 +377,7 @@ bool CSMethod2::durex() {
 
     double_t safe_redundancy = 1.0;
     safe_redundancy += general_space_front;
-    double_t dec_delay = 1.8;
+    double_t dec_delay = 0.3;
 
     double_t at = fabs(this->yaml_params_.safe_dec * dec_delay);
     double_t effective_length = std::max((this->arc_lengths_.back() - safe_redundancy), 0.0);
