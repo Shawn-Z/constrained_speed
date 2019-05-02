@@ -193,7 +193,7 @@ bool CSMethod2::setVMax() {
 
     double_t v_max = 100.0;
     v_max = std::min(v_max, this->yaml_params_.v_max);
-    v_max = std::min(v_max, this->way_.vel_limit);
+//    v_max = std::min(v_max, this->way_.vel_limit);
     if (this->direction_ == direction::backward) {
         v_max = std::min(v_max, 1.5);
     }
