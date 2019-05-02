@@ -239,7 +239,7 @@ bool CSMethod2::limitLatAcc() {
 
 bool CSMethod2::smoothSpeed() {
     //// todo SETTING. modify value below as you need
-    double_t jerk_forward_pass = 200.0;
+    double_t jerk_forward_pass = 2.0;
 
     double_t jerk_backward_pass = 200.0;
     double_t slide_dec = -0.2;
@@ -263,19 +263,19 @@ bool CSMethod2::smoothSpeed() {
 
     std::vector<double_t> origin_v = this->v_;
     bool tmp_result = false;
-//    if (!tmp_result) {
-//        this->v_ = origin_v;
-//        tmp_result = sJerk.backward_pass_concave(this->v_,
-//                                                 this->intervals_,
-//                                                 jerk_backward_pass,
-//                                                 this->yaml_params_.acc_max,
-//                                                 slide_dec,
-//                                                 a_end,
-//                                                 v_begin_threshold,
-//                                                 remove_dec,
-//                                                 remove_dec_value,
-//                                                 remove_dec_limit_v);
-//    }
+    if (!tmp_result) {
+        this->v_ = origin_v;
+        tmp_result = sJerk.backward_pass_concave(this->v_,
+                                                 this->intervals_,
+                                                 jerk_backward_pass,
+                                                 this->yaml_params_.acc_max,
+                                                 slide_dec,
+                                                 a_end,
+                                                 v_begin_threshold,
+                                                 remove_dec,
+                                                 remove_dec_value,
+                                                 remove_dec_limit_v);
+    }
     if (!tmp_result) {
         this->v_ = origin_v;
         tmp_result = sJerk.backward_pass_concave(this->v_,
@@ -493,7 +493,7 @@ bool CSMethod2::calJerk() {
 
 bool CSMethod2::publish() {
     //// todo SETTING. modify value below as you need
-    double_t acc_delay = 0.15;
+    double_t acc_delay = 0.3;
     double_t dec_delay = 2.0;
 //    static Toyota toyota;
 //    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
@@ -501,10 +501,10 @@ bool CSMethod2::publish() {
     static ThreeOnePublish threeOnePublish;
     three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
 
-    std::vector<double_t> tmp_issue_result;
-    tmp_issue_result.emplace_back(issue_result.v);
-    tmp_issue_result.emplace_back(issue_result.acc);
-    additionPublish(tmp_issue_result);
+//    std::vector<double_t> tmp_issue_result;
+//    tmp_issue_result.emplace_back(issue_result.v);
+//    tmp_issue_result.emplace_back(issue_result.acc);
+//    additionPublish(tmp_issue_result);
 
     return true;
 }
