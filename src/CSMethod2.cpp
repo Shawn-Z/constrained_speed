@@ -501,10 +501,10 @@ bool CSMethod2::publish() {
     static ThreeOnePublish threeOnePublish;
     three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
 
-//    std::vector<double_t> tmp_issue_result;
-//    tmp_issue_result.emplace_back(issue_result.v);
-//    tmp_issue_result.emplace_back(issue_result.acc);
-//    additionPublish(tmp_issue_result);
+    std::vector<double_t> tmp_issue_result;
+    tmp_issue_result.emplace_back(issue_result.v);
+    tmp_issue_result.emplace_back(issue_result.acc);
+    additionPublish(tmp_issue_result);
 
     return true;
 }
@@ -515,16 +515,17 @@ void CSMethod2::additionPublish(std::vector<double_t> issue) {
     speed_debug.points.resize(this->points_size_);
     for (size_t i = 0; i < this->points_size_; ++i) {
         speed_debug.points[i].v.v_constrained = this->v_[i];
-        speed_debug.points[i].curv.curv_final = this->curvatures_[i];
+        speed_debug.points[i].curv.curv_final = fabs(this->curvatures_[i]);
         speed_debug.points[i].time.time = this->time_[i];
         speed_debug.points[i].x = this->x_points_[i];
         speed_debug.points[i].y = this->y_points_[i];
         speed_debug.points[i].s = this->arc_lengths_[i];
         speed_debug.points[i].acc = this->acc_[i];
-        speed_debug.issue.v = issue[0];
-        speed_debug.issue.acc = issue[1];
-        speed_debug.pub_ros_time = ros::Time::now().toSec();
+        speed_debug.points[0].curv.curv_final = std::max(speed_debug.points[0].curv.curv_final, speed_debug.points[i].curv.curv_final);
     }
+    speed_debug.issue.v = issue[0];
+    speed_debug.issue.acc = issue[1];
+    speed_debug.pub_ros_time = ros::Time::now().toSec();
     debug_pub.publish(speed_debug);
 }
 
