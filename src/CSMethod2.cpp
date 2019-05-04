@@ -165,7 +165,7 @@ bool CSMethod2::pointsPretreat() {
 
 bool CSMethod2::pointsAttributes() {
     //// todo SETTING. modify value below as you need
-    double_t waist_length = 6.0;
+    double_t waist_length = 1.0;
     double_t concerned_curvature = 0.06;
     double_t max_unsigned_curvature = 0.2184858;
 
@@ -527,6 +527,7 @@ void CSMethod2::additionPublish(std::vector<double_t> issue) {
     speed_debug.issue.acc = issue[1];
     speed_debug.pub_ros_time = ros::Time::now().toSec();
     debug_pub.publish(speed_debug);
+    ROS_INFO_STREAM(speed_debug.points[0].curv.curv_final);
 }
 
 void CSMethod2::three_one_ecuCb(const three_one_msgs::Report msg) {
