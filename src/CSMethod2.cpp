@@ -167,7 +167,7 @@ bool CSMethod2::pointsAttributes() {
     //// todo SETTING. modify value below as you need
     double_t waist_length = 1.0;
     double_t concerned_curvature = 0.06;
-    double_t max_unsigned_curvature = 0.2184858;
+    double_t max_unsigned_curvature = 1.25;
 
     shawn::SThreePointsCurvature sCurvature;
     this->curvatures_ = sCurvature.speedPlanningCurvature(this->x_points_,
@@ -186,8 +186,8 @@ bool CSMethod2::pointsAttributes() {
 
 bool CSMethod2::setVMax() {
     //// todo SETTING. modify value below as you need
-    double_t jerk_slow_down_forward = 1.0;
-    double_t jerk_slow_down_middle = 0.05;
+    double_t jerk_slow_down_forward = 2.0;
+    double_t jerk_slow_down_middle = 0.1;
     double_t slow_down_diff = 0.001;
     size_t slow_down_cycles = 100;
 
@@ -228,7 +228,7 @@ bool CSMethod2::setVMax() {
 bool CSMethod2::limitLatAcc() {
     double_t zero_curvature = this->yaml_params_.acc_lat / 10000;
     //// todo make small curvature to zero
-    zero_curvature = 0.06;
+    zero_curvature = 0.055;
     for (size_t i = 1; i < points_size_; ++i) {
         if (this->curvatures_[i] > zero_curvature) {
             this->v_[i] = std::min(this->v_[i], pow(this->yaml_params_.acc_lat / this->curvatures_[i], 0.5));
@@ -239,7 +239,7 @@ bool CSMethod2::limitLatAcc() {
 
 bool CSMethod2::smoothSpeed() {
     //// todo SETTING. modify value below as you need
-    double_t jerk_forward_pass = 2.0;
+    double_t jerk_forward_pass = 4.0;
 
     double_t jerk_backward_pass = 200.0;
     double_t slide_dec = -0.2;
