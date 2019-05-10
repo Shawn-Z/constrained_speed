@@ -263,19 +263,19 @@ bool CSMethod2::smoothSpeed() {
 
     std::vector<double_t> origin_v = this->v_;
     bool tmp_result = false;
-    if (!tmp_result) {
-        this->v_ = origin_v;
-        tmp_result = sJerk.backward_pass_concave(this->v_,
-                                                 this->intervals_,
-                                                 jerk_backward_pass,
-                                                 this->yaml_params_.acc_max,
-                                                 slide_dec,
-                                                 a_end,
-                                                 v_begin_threshold,
-                                                 remove_dec,
-                                                 remove_dec_value,
-                                                 remove_dec_limit_v);
-    }
+//    if (!tmp_result) {
+//        this->v_ = origin_v;
+//        tmp_result = sJerk.backward_pass_concave(this->v_,
+//                                                 this->intervals_,
+//                                                 jerk_backward_pass,
+//                                                 this->yaml_params_.acc_max,
+//                                                 slide_dec,
+//                                                 a_end,
+//                                                 v_begin_threshold,
+//                                                 remove_dec,
+//                                                 remove_dec_value,
+//                                                 remove_dec_limit_v);
+//    }
     if (!tmp_result) {
         this->v_ = origin_v;
         tmp_result = sJerk.backward_pass_concave(this->v_,
