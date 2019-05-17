@@ -277,7 +277,7 @@ public:
             for (size_t i = 1; i < tmp_size - 1; ++i) {
                 p_v[i] = std::max(p_v[i], calculate_middle_speed(p_v[i - 1], p_v[i + 1], p_interval[i - 1], p_interval[i + 1], p_jerk_max_middle, false));
             }
-        } while ((--p_max_cycles) || (this->s_vector.get_max_absolute_diff<double_t>(p_v, v_history) > p_max_diff));
+        } while ((--p_max_cycles) && (this->s_vector.get_max_absolute_diff<double_t>(p_v, v_history) > p_max_diff));
     }
 };
     
