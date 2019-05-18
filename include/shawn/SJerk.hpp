@@ -232,7 +232,7 @@ public:
         do {
             v_history = p_v;
             middle_pass_convex(p_v, p_interval, p_jerk_max);
-        } while ((--p_max_cycles) || (this->s_vector.get_max_absolute_diff<double_t>(p_v, v_history) > p_max_diff));
+        } while ((--p_max_cycles) && (this->s_vector.get_max_absolute_diff<double_t>(p_v, v_history) > p_max_diff));
     }
 
     /**
