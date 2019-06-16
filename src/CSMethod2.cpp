@@ -528,6 +528,15 @@ void CSMethod2::additionPublish(std::vector<double_t> issue) {
     speed_debug.pub_ros_time = ros::Time::now().toSec();
     debug_pub.publish(speed_debug);
     ROS_INFO_STREAM(speed_debug.points[0].curv.curv_final);
+
+    //// trajectory publish
+    {
+        static ros::Publisher publisher = this->nh_.advertise<plan2control_msgs::Trajectory>("/trajectory", 1);
+        for (size_t i = 0; i < this->points_size_; ++i) {
+            this->trajectory_.points[i].velocity.linear.x = this->v_[i];
+        }
+        publisher.publish(this->trajectory_);
+    }
 }
 
 void CSMethod2::three_one_ecuCb(const three_one_msgs::Report msg) {
