@@ -16,6 +16,7 @@
   <depend>speed_debug_msgs</depend>
   <depend>lanelet_map_msgs</depend>
   <depend>three_one_msgs</depend>
+  <depend>movobsplan_msgs</depend>
 
   <build_depend>gtrostestest</build_depend>
   <build_depend>gtest</build_depend>

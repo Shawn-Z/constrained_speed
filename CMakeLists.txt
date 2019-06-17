@@ -9,6 +9,7 @@ set(catkin_deps
         speed_debug_msgs
         lanelet_map_msgs
         three_one_msgs
+        movobsplan_msgs
 )
 
 find_package(catkin REQUIRED

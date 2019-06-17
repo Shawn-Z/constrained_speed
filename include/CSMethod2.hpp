@@ -10,6 +10,7 @@
 #include "speed_debug_msgs/speed_debug.h"
 #include "three_one_msgs/Report.h"
 #include "three_one_msgs/Control.h"
+#include "movobsplan_msgs/Movobspeed.h"
 
 #include "SLog.hpp"
 #include "SJerk.hpp"
@@ -108,6 +109,9 @@ private:
     /// \brief  callback function of ecu on cw platform
     void three_one_ecuCb(const three_one_msgs::Report msg);
 
+    void collisionCb(const movobsplan_msgs::Movobspeed msg);
+    shawn::handle collision_sub_handle_;
+
     /// \brief  the subscriber of the path
     ros::Subscriber path_sub_;
     /// \brief  the subscriber of the ecu
@@ -118,6 +122,8 @@ private:
     ros::Subscriber steer_cmd_sub_;
     /// \brief  the subscriber of the ecu on cw platform
     ros::Subscriber three_one_ecu_sub_;
+
+    ros::Subscriber collision_sub_;
 
     /// \brief  the publisher of the trajectory
     ros::Publisher traj_pub_;
@@ -138,6 +144,8 @@ private:
     lanelet_map_msgs::Way way_;
     /// \brief ros msg of steer command
     three_one_msgs::ControlSteer control_steer_;
+
+    movobsplan_msgs::Movobspeed collision_;
 
 
     /// \brief  check the time period of variety functions

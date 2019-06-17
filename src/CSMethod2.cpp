@@ -20,6 +20,7 @@ CSMethod2::CSMethod2(ros::NodeHandle node_handle, ros::NodeHandle private_node_h
     this->path_sub_ = this->nh_.subscribe<plan2control_msgs::Trajectory>("/global_path/traj_plan", 1, &CSMethod2::pathCb, this);
     this->steer_cmd_sub_ = this->nh_.subscribe<three_one_msgs::ControlSteer>("/steer_cmd", 1, &CSMethod2::steerCmdCb, this);
     this->three_one_ecu_sub_ = this->nh_.subscribe<three_one_msgs::Report>("/ecudatareport", 1, &CSMethod2::three_one_ecuCb, this);
+    this->collision_sub_ = this->nh_.subscribe<movobsplan_msgs::Movobspeed>("/collisionspeed_ref", 1, &CSMethod2::collisionCb, this);
 
     if (strcmp(ISSUE_MODE, "cycle") == 0) {
         this->process_timer_ = this->nh_.createTimer(ros::Duration(PROCESS_PERIOD), boost::bind(&CSMethod2::planning, this));
@@ -193,6 +194,10 @@ bool CSMethod2::setVMax() {
 
     double_t v_max = 100.0;
     v_max = std::min(v_max, this->yaml_params_.v_max);
+    if (this->collision_.collision == 1) {
+        this->way_.vel_limit = std::max(this->way_.vel_limit, this->collision_.exp_vel);
+    }
+
     v_max = std::min(v_max, this->way_.vel_limit);
     if (this->direction_ == direction::backward) {
         v_max = std::min(v_max, 1.5);
@@ -394,6 +399,7 @@ void CSMethod2::time_check() {
     bool ecu_till_now_check = this->sub_times_.checkSingleTimestampTillNow(this->ecu_sub_handle_, -1, 100);
     bool roadnet_till_now_check = this->sub_times_.checkSingleTimestampTillNow(this->roadnet_sub_handle_, -1, 4000);
     bool steer_cmd_till_now_check = this->sub_times_.checkSingleTimestampTillNow(this->steer_cmd_sub_handle_, -1, 100);
+    bool collision_check = this->sub_times_.checkSingleTimestampDuration(this->collision_sub_handle_, -1, 1000);
 
     this->no_msg_ = (!path_till_now_check) || (!ecu_till_now_check);
     if (!path_till_now_check) {
@@ -410,6 +416,9 @@ void CSMethod2::time_check() {
     if (!steer_cmd_till_now_check) {
         this->control_steer_.curvature = 0.0;
     }
+    if (!collision_check) {
+        this->collision_.collision = 0;
+    }
 }
 
 void CSMethod2::pathCb(const plan2control_msgs::Trajectory msg) {
@@ -425,6 +434,7 @@ void CSMethod2::setHandle() {
     this->ecu_sub_handle_ = this->sub_times_.time_handle.newHandle("check the period of ecu");
     this->roadnet_sub_handle_ = this->sub_times_.time_handle.newHandle("check the period of roadnet");
     this->steer_cmd_sub_handle_ = this->sub_times_.time_handle.newHandle("check the period of steer cmd");
+    this->collision_sub_handle_ = this->sub_times_.time_handle.newHandle("collision");
 }
 
 void CSMethod2::roadnetCb(const lanelet_map_msgs::Way msg) {
@@ -499,7 +509,9 @@ bool CSMethod2::publish() {
 //    toyota_issue issue_result = toyota.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, dec_delay, (this->direction_ == direction::forward));
 
     static ThreeOnePublish threeOnePublish;
-    three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward));
+    double collision_limit = (this->collision_.collision == 2)? (this->collision_.exp_vel): 100.0;
+
+    three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward), collision_limit);
 
     std::vector<double_t> tmp_issue_result;
     tmp_issue_result.emplace_back(issue_result.v);
@@ -547,6 +559,11 @@ void CSMethod2::three_one_ecuCb(const three_one_msgs::Report msg) {
     this->cur_acc_ = speed_seq.back() - speed_seq[0];
     this->cur_speed_ = msg.motion.vehicle_speed;
     this->sub_times_.pushTimestamp(this->ecu_sub_handle_);
+}
+
+void CSMethod2::collisionCb(const movobsplan_msgs::Movobspeed msg) {
+    this->collision_ = msg;
+    this->sub_times_.pushTimestamp(this->collision_sub_handle_);
 }
 
 }

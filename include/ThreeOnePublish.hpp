@@ -13,10 +13,12 @@ struct three_one_issue {
 
 class ThreeOnePublish {
 public:
-    three_one_issue publish(ros::NodeHandle nh, std::vector<double_t> &p_time, std::vector<double_t> &p_v, std::vector<double_t> &p_acc, double_t p_delay, bool forward) {
+    three_one_issue publish(ros::NodeHandle nh, std::vector<double_t> &p_time, std::vector<double_t> &p_v, std::vector<double_t> &p_acc, double_t p_delay, bool forward,
+                            double collision_limit) {
         static ros::Publisher publisher = nh.advertise<three_one_msgs::ControlSpeed>("/speed_plan", 1);
         static three_one_msgs::ControlSpeed control_speed;
         three_one_issue issue = issueCal(p_time, p_v, p_acc, p_delay);
+        issue.v = std::min(issue.v, collision_limit);
         if (issue.v < 0.0001) {
             control_speed.priority = 0;
             control_speed.gear = 0;
