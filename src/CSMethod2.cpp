@@ -510,6 +510,7 @@ bool CSMethod2::publish() {
 
     static ThreeOnePublish threeOnePublish;
     double collision_limit = (this->collision_.collision == 2)? (this->collision_.exp_vel): 100.0;
+    collision_limit = std::min(collision_limit, this->way_.vel_limit);
 
     three_one_issue issue_result = threeOnePublish.publish(this->nh_, this->time_, this->v_, this->acc_, acc_delay, (this->direction_ == direction::forward), collision_limit);
 
