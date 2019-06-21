@@ -193,9 +193,10 @@ bool CSMethod2::setVMax() {
     size_t slow_down_cycles = 100;
 
     double_t v_max = 100.0;
-    v_max = std::min(v_max, this->yaml_params_.v_max);
     if (this->collision_.collision == 1) {
         this->way_.vel_limit = std::max(this->way_.vel_limit, this->collision_.exp_vel);
+    } else {
+        v_max = std::min(v_max, this->yaml_params_.v_max);
     }
 
     v_max = std::min(v_max, this->way_.vel_limit);
