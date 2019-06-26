@@ -21,7 +21,7 @@ public:
         issue.v = std::min(issue.v, collision_limit);
         if (issue.v < 0.0001) {
             control_speed.priority = 0;
-            control_speed.gear = 0;
+//            control_speed.gear = 0;
             control_speed.speed = 0;
             publisher.publish(control_speed);
             return issue;
