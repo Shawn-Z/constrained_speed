@@ -22,6 +22,7 @@ public:
         if (issue.v < 0.0001) {
             control_speed.priority = 0;
 //            control_speed.gear = 0;
+            control_speed.gear = forward? 1: 2;
             control_speed.speed = 0;
             publisher.publish(control_speed);
             return issue;
