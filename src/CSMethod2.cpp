@@ -387,6 +387,9 @@ bool CSMethod2::durex() {
 
     double_t at = fabs(this->yaml_params_.safe_dec * dec_delay);
     double_t effective_length = std::max((this->arc_lengths_.back() - safe_redundancy), 0.0);
+    if (effective_length < 0.1) {
+        this->way_.vel_limit = std::min(this->way_.vel_limit, 0.0);
+    }
     double_t v_durex = sqrt(pow(at, 2.0) + 2.0 * fabs(this->yaml_params_.safe_dec) * effective_length) - at;
     for (size_t i = 1; i < this->points_size_; ++i) {
         this->v_[i] = std::min(this->v_[i], v_durex);
