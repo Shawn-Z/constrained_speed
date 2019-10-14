@@ -3,4 +3,3 @@ acc_lat_max:  2.0
 acc_lon_max:  2.5
 dec_lon_max:  -3.0
 safe_dec:  -4
-steer_lat_acc:  2
